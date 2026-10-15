@@ -198,6 +198,36 @@ jobs:
           perl -pi -e 's|pub const RS_PUB_KEY: &str = ".*";|pub const RS_PUB_KEY: &str = "cj++s3rpQ21aiXQ9bJUx4Nu6Djr22V3t6d5ZjGDhLR4=";|' $CFG
           grep -n 'RENDEZVOUS_SERVERS\|RS_PUB_KEY: &str' $CFG
 
+      - name: Imposta icona e logo Comunitec
+        shell: bash
+        run: |
+          if [ ! -f comunitec_icon.png ]; then echo "Nessuna comunitec_icon.png: icona standard"; exit 0; fi
+          python3 -m pip install --quiet --break-system-packages pillow 2>/dev/null || python3 -m pip install --quiet pillow
+          python3 - <<'PY'
+          import os
+          from PIL import Image
+          im = Image.open("comunitec_icon.png").convert("RGBA")
+          w, h = im.size; s = max(w, h)
+          sq = Image.new("RGBA", (s, s), (0, 0, 0, 0)); sq.paste(im, ((s - w) // 2, (s - h) // 2))
+          im = sq.resize((1024, 1024), Image.LANCZOS)
+          sizes = [(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)]
+          for p in ["res/icon.ico", "res/tray-icon.ico",
+                    "flutter/windows/runner/resources/app_icon.ico", "flutter/assets/icon.ico"]:
+              im.save(p, sizes=sizes)
+          im.resize((512, 512), Image.LANCZOS).save("res/icon.png")
+          im.resize((512, 512), Image.LANCZOS).save("res/mac-icon.png")
+          im.resize((256, 256), Image.LANCZOS).save("flutter/assets/icon.png")
+          im.save("flutter/macos/Runner/AppIcon.icns")
+          for src, dst in [("comunitec_logo.png", "logo.png"),
+                           ("comunitec_logo_light.png", "logo_light.png"),
+                           ("comunitec_logo_dark.png", "logo_dark.png")]:
+              if os.path.exists(src):
+                  lg = Image.open(src).convert("RGBA")
+                  lg.thumbnail((600, 120), Image.LANCZOS)
+                  lg.save("flutter/assets/" + dst)
+          print("Icona Comunitec applicata")
+          PY
+
       - name: Restore bridge files
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
@@ -899,6 +929,36 @@ jobs:
           perl -pi -e 's|"rs-ny\.rustdesk\.com"|"assistenza.comunitec.it"|' $CFG
           perl -pi -e 's|pub const RS_PUB_KEY: &str = ".*";|pub const RS_PUB_KEY: &str = "cj++s3rpQ21aiXQ9bJUx4Nu6Djr22V3t6d5ZjGDhLR4=";|' $CFG
           grep -n 'RENDEZVOUS_SERVERS\|RS_PUB_KEY: &str' $CFG
+
+      - name: Imposta icona e logo Comunitec
+        shell: bash
+        run: |
+          if [ ! -f comunitec_icon.png ]; then echo "Nessuna comunitec_icon.png: icona standard"; exit 0; fi
+          python3 -m pip install --quiet --break-system-packages pillow 2>/dev/null || python3 -m pip install --quiet pillow
+          python3 - <<'PY'
+          import os
+          from PIL import Image
+          im = Image.open("comunitec_icon.png").convert("RGBA")
+          w, h = im.size; s = max(w, h)
+          sq = Image.new("RGBA", (s, s), (0, 0, 0, 0)); sq.paste(im, ((s - w) // 2, (s - h) // 2))
+          im = sq.resize((1024, 1024), Image.LANCZOS)
+          sizes = [(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)]
+          for p in ["res/icon.ico", "res/tray-icon.ico",
+                    "flutter/windows/runner/resources/app_icon.ico", "flutter/assets/icon.ico"]:
+              im.save(p, sizes=sizes)
+          im.resize((512, 512), Image.LANCZOS).save("res/icon.png")
+          im.resize((512, 512), Image.LANCZOS).save("res/mac-icon.png")
+          im.resize((256, 256), Image.LANCZOS).save("flutter/assets/icon.png")
+          im.save("flutter/macos/Runner/AppIcon.icns")
+          for src, dst in [("comunitec_logo.png", "logo.png"),
+                           ("comunitec_logo_light.png", "logo_light.png"),
+                           ("comunitec_logo_dark.png", "logo_dark.png")]:
+              if os.path.exists(src):
+                  lg = Image.open(src).convert("RGBA")
+                  lg.thumbnail((600, 120), Image.LANCZOS)
+                  lg.save("flutter/assets/" + dst)
+          print("Icona Comunitec applicata")
+          PY
 
       - name: Import the codesign cert
         if: env.MACOS_P12_BASE64 != null
