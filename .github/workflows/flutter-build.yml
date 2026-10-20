@@ -192,11 +192,17 @@ jobs:
 
       - name: Imposta server Comunitec
         shell: bash
+        env:
+          RS_SERVER: ${{ secrets.RS_SERVER }}
+          RS_KEY: ${{ secrets.RS_KEY }}
         run: |
+          if [ -z "$RS_SERVER" ] || [ -z "$RS_KEY" ]; then echo "Mancano i secrets RS_SERVER / RS_KEY"; exit 1; fi
           CFG=libs/hbb_common/src/config.rs
-          perl -pi -e 's|"rs-ny\.rustdesk\.com"|"assistenza.comunitec.it"|' $CFG
-          perl -pi -e 's|pub const RS_PUB_KEY: &str = ".*";|pub const RS_PUB_KEY: &str = "cj++s3rpQ21aiXQ9bJUx4Nu6Djr22V3t6d5ZjGDhLR4=";|' $CFG
-          grep -n 'RENDEZVOUS_SERVERS\|RS_PUB_KEY: &str' $CFG
+          perl -pi -e 's|"rs-ny\.rustdesk\.com"|"$ENV{RS_SERVER}"|' $CFG
+          perl -pi -e 's|pub const RS_PUB_KEY: &str = ".*";|pub const RS_PUB_KEY: &str = "$ENV{RS_KEY}";|' $CFG
+          perl -0pi -e 's/(pub fn is_incoming_only\(\) -> bool \{).*?\n\}/$1\n    true\n}/s' $CFG
+          grep -n -A2 'pub fn is_incoming_only' $CFG
+          grep -n 'RENDEZVOUS_SERVERS' $CFG
 
       - name: Imposta icona e logo Comunitec
         shell: bash
@@ -924,11 +930,17 @@ jobs:
 
       - name: Imposta server Comunitec
         shell: bash
+        env:
+          RS_SERVER: ${{ secrets.RS_SERVER }}
+          RS_KEY: ${{ secrets.RS_KEY }}
         run: |
+          if [ -z "$RS_SERVER" ] || [ -z "$RS_KEY" ]; then echo "Mancano i secrets RS_SERVER / RS_KEY"; exit 1; fi
           CFG=libs/hbb_common/src/config.rs
-          perl -pi -e 's|"rs-ny\.rustdesk\.com"|"assistenza.comunitec.it"|' $CFG
-          perl -pi -e 's|pub const RS_PUB_KEY: &str = ".*";|pub const RS_PUB_KEY: &str = "cj++s3rpQ21aiXQ9bJUx4Nu6Djr22V3t6d5ZjGDhLR4=";|' $CFG
-          grep -n 'RENDEZVOUS_SERVERS\|RS_PUB_KEY: &str' $CFG
+          perl -pi -e 's|"rs-ny\.rustdesk\.com"|"$ENV{RS_SERVER}"|' $CFG
+          perl -pi -e 's|pub const RS_PUB_KEY: &str = ".*";|pub const RS_PUB_KEY: &str = "$ENV{RS_KEY}";|' $CFG
+          perl -0pi -e 's/(pub fn is_incoming_only\(\) -> bool \{).*?\n\}/$1\n    true\n}/s' $CFG
+          grep -n -A2 'pub fn is_incoming_only' $CFG
+          grep -n 'RENDEZVOUS_SERVERS' $CFG
 
       - name: Imposta icona e logo Comunitec
         shell: bash
